@@ -149,6 +149,9 @@ handle_info({init, Ref, Socket, _Transport, _Opts}, State) ->
         %% Делаю явный link/1, чтобы связать процесс контроллера с процессом хендлера, иначе падение хендлера будет обрабатываться только его супервизором и не дойдет до контроллера
         link(Pid),
 
+%%        %% Старт хендлера без супервизора
+%%        {ok, Pid} = Module:start_link(D#destination.name, D#destination.type,
+%%                                      D#destination.connection_config),
 
         case D#destination.type of
             main ->
@@ -160,7 +163,6 @@ handle_info({init, Ref, Socket, _Transport, _Opts}, State) ->
                 S#state{additionals = [{Pid, Module}|Additionals]}
         end
     end , State0, Destinations),
-
     {noreply, State1};
 handle_info({tcp, Port, Data}, State) when Port =:= State#state.remote ->
 

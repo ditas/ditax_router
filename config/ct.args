@@ -1,0 +1,2 @@
+{device_port, 7770}.
+{server_port, 7771}.

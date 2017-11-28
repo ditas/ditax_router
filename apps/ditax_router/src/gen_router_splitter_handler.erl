@@ -13,6 +13,7 @@
 -callback start_link(term(), atom(), term()) -> {ok, pid()}.
 -callback stop(pid()) -> ok.
 -callback handle_data(pid(), term()) -> ok.
+-callback handle_out_data(pid(), term()) -> ok.
 
 %% API
 -export([]).

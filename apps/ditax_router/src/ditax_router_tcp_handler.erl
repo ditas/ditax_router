@@ -21,8 +21,10 @@
     initialize/3,
     start/4,
     start_link/1,
+    start_link/3,
     stop/1,
-    handle_data/2]).
+    handle_data/2,
+    handle_out_data/2]).
 
 %% gen_server callbacks
 -export([init/1,
@@ -50,6 +52,7 @@ initialize(Name,  _Type, _ConnectionConfig) ->
     SupName = supervisor_id(Name),
     [{Name, {ditax_router_tcp_handler_sup, start_link, [SupName]},
       permanent, 2000, supervisor, [ditax_router_tcp_handler_sup]}].
+%%    [].
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -66,12 +69,20 @@ start(Name, Type, ConnectionConfig, ControllerPid) ->
 start_link({Type, ConnectionConfig, ControllerPid}) ->
     gen_server:start_link(?MODULE, {Type, ConnectionConfig, ControllerPid}, []).
 
+%% Стартуем процесс из контроллера без супервизора
+start_link(_Name, Type, ConnectionConfig) ->
+    ControllerPid = self(),
+    gen_server:start_link(?MODULE, {Type, ConnectionConfig, ControllerPid}, []).
+
 stop(Pid) ->
     gen_server:cast(Pid, stop).
 
 handle_data(Pid, Data) ->
     From = self(),
     gen_server:cast(Pid, {handle_data, From, Data}).
+
+handle_out_data(_Pid, _Data) ->
+    ok.
 
 %%%===================================================================
 %%% gen_server callbacks
